@@ -9,7 +9,6 @@ namespace SizzleBuildTool
 {
     static class Program
     {
-        static FileManager fileManager;
 
         static void Main(string[] args)
         {

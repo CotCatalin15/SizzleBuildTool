@@ -7,12 +7,12 @@ using System.Threading.Tasks;
 
 namespace SizzleBuildTool.Commands.SubCommands
 {
-    interface IBuildSubCommand
+    public interface IBuildSubCommand
     {
         string CommandName { get; }
 
         bool CanExecute(IBuildCommand Caller, ICommandArgument[] arguments);
 
-        void Execute(IBuildCommand Caller, ICommandArgument[] arguments);
+        void Execute(FileParser Parser, IBuildCommand Caller, ICommandArgument[] arguments);
     }
 }

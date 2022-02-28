@@ -49,11 +49,16 @@ namespace SizzleBuildTool.Commands
             return true;
         }
 
-        public void Execute(ICommandArgument[] arguments)
+        public void Execute(FileParser Parser, ICommandArgument[] arguments)
         {
             _fieldEntries = new List<FieldEntry>();
 
-            string Line = FileParser.ReadNextLine(this);
+            string Line = Parser.ReadNextLine(this);
+
+            if(Line == null)
+            {
+                return;
+            }
 
             //this line must contained class
             if (!Line.Contains("class"))
@@ -62,7 +67,7 @@ namespace SizzleBuildTool.Commands
             }
             string ClassLine = Line;
 
-            if (!FileParser.ReadNextLine(this).Contains("{"))
+            if (!Parser.ReadNextLine(this).Contains("{"))
             {
                 throw new Exception("Must be a full class(parser did not find '{')");
             }
@@ -71,6 +76,7 @@ namespace SizzleBuildTool.Commands
             ClassLine = ClassLine.Replace("public ", "");
             ClassLine = ClassLine.Replace("private ", "");
             ClassLine = ClassLine.Replace("protected ", "");
+            if(arguments.Length > 0)
             ClassLine = ClassLine.Replace(arguments[0].Value as string, "");
 
             string[] ClassLineSplit = ClassLine.Split(new char[] { ' ', ':' }, StringSplitOptions.RemoveEmptyEntries);
@@ -86,31 +92,36 @@ namespace SizzleBuildTool.Commands
                 }
             }
 
-            while (!Line.Contains("};"))
+            while (Line != null && !Line.Contains("};"))
             {
-                Line = FileParser.ReadNextLine(this);
+                Line = Parser.ReadNextLine(this);
             }
 
             //Build SClass
-            BuildSClass(arguments);
+            BuildSClass(Parser, arguments);
         }
 
         static string SClassGenString = "";
+
+        object lockObj = new object();
 
         static public void LoadSGenClass()
         {
             StreamReader reader = new StreamReader("SClassGenerator.gen");
             SClassGenString = reader.ReadToEnd();
             reader.Close();
+
         }
 
-        private void BuildSClass(ICommandArgument[] arguments)
+        private void BuildSClass(FileParser Parser, ICommandArgument[] arguments)
         {
-            if (SClassGenString.Length == 0)
+            lock (lockObj)
             {
-                LoadSGenClass();
+                if (SClassGenString.Length == 0)
+                {
+                    LoadSGenClass();
+                }
             }
-
 
             string GeneratedClass = SClassGenString.Replace("${ClassName}", _className);
             GeneratedClass = GeneratedClass.Replace("${SClassName}", $"{_className}_SClass");
@@ -135,7 +146,7 @@ namespace SizzleBuildTool.Commands
             GeneratedClass = GeneratedClass.Replace("${ClassAPI}", api);
 
 
-            FileParser.WriteToOutput(GeneratedClass);
+            Parser.WriteToOutput(GeneratedClass);
         }
 
 

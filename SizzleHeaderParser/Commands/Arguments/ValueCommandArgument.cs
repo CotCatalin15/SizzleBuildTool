@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace SizzleBuildTool.Commands.Arguments
 {
-    class ValueCommandArgument : ICommandArgument
+    public class ValueCommandArgument : ICommandArgument
     {
         object _value;
         public ValueCommandArgument(object Value)

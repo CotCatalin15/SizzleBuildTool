@@ -8,7 +8,7 @@ using System.Threading.Tasks;
 namespace SizzleBuildTool.Commands.SubCommands
 {
     //Variable reflexion sub-command
-    class Reflect : IBuildSubCommand
+    public class Reflect : IBuildSubCommand
     {
         public string CommandName => "Reflect";
 
@@ -18,9 +18,9 @@ namespace SizzleBuildTool.Commands.SubCommands
             return true;
         }
 
-        public void Execute(IBuildCommand Caller, ICommandArgument[] arguments)
+        public void Execute(FileParser Parser, IBuildCommand Caller, ICommandArgument[] arguments)
         {
-            string VariableLine = FileParser.ReadNextLineSubCmd(this);
+            string VariableLine = Parser.ReadNextLineSubCmd(this);
             string[] varType = VariableLine.Split(new char[] { '\t', '\n', '\r', ' ', ';'}, StringSplitOptions.RemoveEmptyEntries);
             if(varType.Length != 2)
             {

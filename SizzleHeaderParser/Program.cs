@@ -10,6 +10,7 @@ namespace SizzleBuildTool
     {
         static void Main(string[] args)
         {
+            /*
             string path;
             if (args.Length > 0)
             {
@@ -38,7 +39,7 @@ namespace SizzleBuildTool
                 else if (input == "q")
                     break;
             }
-
+            */
         }
     }
 }

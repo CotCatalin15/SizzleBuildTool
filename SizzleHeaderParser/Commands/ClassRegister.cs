@@ -27,7 +27,7 @@ namespace SizzleBuildTool.Commands
             throw new Exception("ClassRegister argument must be a string");
         }
 
-        public void Execute(ICommandArgument[] arguments)
+        public void Execute(FileParser Parser, ICommandArgument[] arguments)
         {
             //It can execute
             string className = arguments[0].Value as string;

@@ -6,13 +6,13 @@ using System.Threading.Tasks;
 
 namespace SizzleBuildTool.Commands.Arguments
 {
-    enum CommandArgType
+    public enum CommandArgType
     {
         Value,
         Expression
     }
 
-    interface ICommandArgument
+    public interface ICommandArgument
     {
         public CommandArgType Type { get; }
         public object Value { get; }

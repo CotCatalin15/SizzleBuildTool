@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 namespace SizzleBuildTool.Commands.Arguments
 {
     //Only equal operator for now
-    class ExpressionCommandArgument : ICommandArgument
+    public class ExpressionCommandArgument : ICommandArgument
     {
         string _varName;
         object _value;

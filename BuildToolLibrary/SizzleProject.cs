@@ -13,27 +13,80 @@ namespace BuildToolLibrary
         private string _projectFilePath = "";
         private string _projectName = "";
 
-        private Dictionary<string, List<string> > _buildFiles = new Dictionary<string, List<string>>();
+        private Dictionary<string, HashSet<string> > _buildFiles = new Dictionary<string, HashSet<string>>();
 
         //Files that need to be rebuilt
         private HashSet<string> _rebuildFiles = new();
 
-        ObservableCollection<string> _rebuldFilesOutList = new();
 
-        FileSystemWatcher _watcher;
+        public HashSet<string> RebuldFiles
+        {
+            get { return _rebuildFiles; }
+            set { _rebuildFiles = value; }
+        }
 
-        public Dictionary<string, List<string> > BuildFiles
+        public Dictionary<string, HashSet<string> > BuildFiles
         {
             get { return _buildFiles; }
             set { _buildFiles = value; }
         }
 
-        public ObservableCollection<string> RebuildFilesNeeded { get => _rebuldFilesOutList; }
 
         public static SizzleProject LoadProject(string FilePath)
         {
             SizzleProject project = SizzleProject.ParseProjectConfig(FilePath);
             return project;
+        }
+
+        public void AddBuildToolFile(string FilePath, string FileName)
+        {
+            string relativeFullPath = Path.GetRelativePath(_projectFilePath, FilePath);
+            string relaivePath = Path.GetDirectoryName(relativeFullPath);
+
+            if(_buildFiles.ContainsKey(relaivePath))
+            {
+                _buildFiles[relaivePath].Add(FileName);
+                return;
+            }
+
+            _buildFiles.Add(relaivePath, new HashSet<string>());
+            _buildFiles[relaivePath].Add(FileName);
+        }
+
+        public void RemoveBuildToolFile(string FilePath, string FileName)
+        {
+
+            if (_buildFiles.TryGetValue(FilePath, out HashSet<string> buildFiles))
+            {
+                buildFiles.Remove(FileName);
+                if(_buildFiles.Count == 0)
+                {
+                    _buildFiles.Remove(FilePath);
+                }
+            }
+
+            _rebuildFiles.Remove(FilePath);
+        }
+
+        public string NotifyChangedFile(string FilePath, string FileName)
+        {
+            string relativeFullPath = Path.GetRelativePath(_projectFilePath, FilePath);
+            string relaivePath = Path.GetDirectoryName(relativeFullPath);
+
+
+
+            HashSet<string> outList = null;
+            if (_buildFiles.TryGetValue(relaivePath, out outList))
+            {
+                if(outList.Contains(FileName))
+                {
+                    _rebuildFiles.Add(relativeFullPath);
+                    return relativeFullPath;
+                }
+                return null;
+            }
+
+            return null;
         }
 
         public void SaveChanges()
@@ -46,55 +99,10 @@ namespace BuildToolLibrary
             CloseProjectConfig();
         }
 
-        void InitFileWatcher()
-        {
-            if (_watcher == null)
-            {
-                _watcher = new FileSystemWatcher(_projectFilePath);
-                _watcher.IncludeSubdirectories = true;
-                _watcher.EnableRaisingEvents = true;
-                _watcher.Filter = "*.h";
-                _watcher.Changed += _watcher_Changed;
-            }
-            else
-            {
-                _watcher.Path = _projectFilePath;
-            }
-        }
 
-
-        private void _watcher_Changed(object sender, FileSystemEventArgs e)
-        {
-            string relativeFullPath = Path.GetRelativePath(_projectFilePath, e.FullPath);
-            string relaivePath = Path.GetDirectoryName(relativeFullPath);
-
-
-
-            List<string> outList;
-            if(_buildFiles.TryGetValue(relaivePath, out outList))
-            {
-                foreach(var file in outList)
-                {
-                    if(file == e.Name)
-                    {
-                        if (_rebuildFiles.Add(file))
-                        {
-                            _rebuldFilesOutList.Add(file);
-                        }
-                    }
-                }
-            }
-
-            if (_rebuildFiles.Add(relativeFullPath))
-            {
-                _rebuldFilesOutList.Add(relativeFullPath);
-            }
-
-        }
 
         public string ProjectPath { get { return _projectFilePath; } set {
                 _projectFilePath = value;
-                InitFileWatcher();
             } }
 
         public string ProjectName { get { return _projectName; } set { _projectName = value; } }

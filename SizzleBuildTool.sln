@@ -9,7 +9,10 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SizzleHeaderParser", "Sizzl
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "BuildTool", "BuildTool\BuildTool.csproj", "{C05C6D59-95CA-4C9C-B0AB-A29F0959F1A4}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BuildToolLibrary", "BuildToolLibrary\BuildToolLibrary.csproj", "{BB1F0B43-AE78-4BE0-87E4-3D08E67BC35A}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "BuildToolLibrary", "BuildToolLibrary\BuildToolLibrary.csproj", "{BB1F0B43-AE78-4BE0-87E4-3D08E67BC35A}"
+	ProjectSection(ProjectDependencies) = postProject
+		{2D2DA4FE-98FA-442A-829D-493F0B2484B5} = {2D2DA4FE-98FA-442A-829D-493F0B2484B5}
+	EndProjectSection
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
